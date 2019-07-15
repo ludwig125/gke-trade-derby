@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: trade-derby-web
+  name: trade-derby-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: trade-derby-web
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        run: trade-derby-web
+    spec:
+      containers:
+      - image: gcr.io/gke-trade-derby/trade-derby:v2
+        name: trade-derby-web
+        ports:
+        - containerPort: 8080
+
