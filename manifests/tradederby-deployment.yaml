@@ -16,7 +16,7 @@ spec:
         run: trade-derby-web
     spec:
       containers:
-      - image: gcr.io/gke-trade-derby/trade-derby:v2
+      - image: gcr.io/${PROJECT_NAME}/trade-derby:$CIRCLE_SHA1
         name: trade-derby-web
         ports:
         - containerPort: 8080

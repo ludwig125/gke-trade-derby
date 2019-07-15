@@ -7,7 +7,7 @@ jobs:
       CLUSTER_NAME: trade-derby-small-cluster
       CLOUDSDK_COMPUTE_ZONE: us-west1-c
     docker:
-      - image: google/cloud-sdk:253.0.0-alpine
+      - image: google/cloud-sdk:251.0.0-alpine
     steps:
       - checkout
       - setup_remote_docker
@@ -19,11 +19,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --no-cache 
-              py-pip=9.0.0-r1 
-              gettext
-            pip install 
-              docker-compose==1.12.0
+            apk add --update --no-cache gettext
             gcloud components install kubectl
       - run:
           name: Install Docker client
@@ -45,26 +41,30 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
-            docker build --cache-from=asia.gcr.io/${PROJECT_NAME}/sample:latest -t asia.gcr.io/${PROJECT_NAME}/sample:$CIRCLE_SHA1 .
-            docker tag asia.gcr.io/${PROJECT_NAME}/sample:$CIRCLE_SHA1 asia.gcr.io/${PROJECT_NAME}/sample:latest
+            docker build --cache-from=gcr.io/${PROJECT_NAME}/trade-derby:latest -t gcr.io/${PROJECT_NAME}/trade-derby:$CIRCLE_SHA1 .
+            docker tag gcr.io/${PROJECT_NAME}/trade-derby:$CIRCLE_SHA1 gcr.io/${PROJECT_NAME}/trade-derby:latest
       - run:
           name: Save Docker image layer cache
           command: |
             mkdir -p /caches
-            docker save -o /caches/app.tar asia.gcr.io/${PROJECT_NAME}/sample:latest
+            docker save -o /caches/app.tar gcr.io/${PROJECT_NAME}/trade-derby:latest
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
             - /caches/app.tar
-      - run:
-          name: Run tests
-          command: |
-            docker-compose -f docker-compose.test.yml run --rm sample
+      # - run:
+      #     name: Run tests
+      #     command: |
+      #       docker-compose -f docker-compose.test.yml run --rm trade-derby
+      # - run:
+      #     name: Run tests
+      #     command: |
+      #       go test -v -race ./...
       - deploy:
           name: Deploy application Docker image
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              echo $ACCT_AUTH | base64 -d > ${HOME}/account-auth.json
+              echo $GCLOUD_SERVICE_KEY | base64 -d > ${HOME}/account-auth.json
               gcloud auth activate-service-account --key-file ${HOME}/account-auth.json
               gcloud config set project $PROJECT_NAME
               gcloud --quiet config set container/cluster $CLUSTER_NAME

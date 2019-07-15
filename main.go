@@ -28,7 +28,7 @@ func main() {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Serving request: %s", r.URL.Path)
 	host, _ := os.Hostname()
-	fmt.Fprintf(w, "Hello, world!\n")
+	fmt.Fprintf(w, "Hello, world! circleci\n")
 	fmt.Fprintf(w, "Version: 1.0.0\n")
 	fmt.Fprintf(w, "Hostname: %s\n", host)
 	fmt.Fprintf(w, "cpu: %d\n", runtime.NumCPU())
@@ -81,7 +81,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 				case <-done:
 					return
 				case addedStream <- i + additive:
-					time.Sleep(3 * time.Second)
+					time.Sleep(1 * time.Second)
 				}
 			}
 		}()
