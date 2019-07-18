@@ -1,13 +1,29 @@
 version: 2.1
+executors:
+  golang:
+    docker:
+    - image: circleci/golang:1.12
+  gcloud:
+    docker:
+    - image: google/cloud-sdk:251.0.0-alpine
 jobs:
-  build:
+  test:
+    executor: golang
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: go build
+      - run:
+          name: test
+          command: go test
+  deploy:
     working_directory: /app
     environment:
       PROJECT_NAME: gke-trade-derby
       CLUSTER_NAME: trade-derby-small-cluster
       CLOUDSDK_COMPUTE_ZONE: us-west1-c
-    docker:
-      - image: google/cloud-sdk:251.0.0-alpine
+    executor: gcloud
     steps:
       - checkout
       - setup_remote_docker
@@ -52,24 +68,27 @@ jobs:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
             - /caches/app.tar
-      # - run:
-      #     name: Run tests
-      #     command: |
-      #       docker-compose -f docker-compose.test.yml run --rm trade-derby
-      # - run:
-      #     name: Run tests
-      #     command: |
-      #       go test -v -race ./...
       - deploy:
           name: Deploy application Docker image
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              echo $GCLOUD_SERVICE_KEY | base64 -d > ${HOME}/account-auth.json
-              gcloud auth activate-service-account --key-file ${HOME}/account-auth.json
-              gcloud config set project $PROJECT_NAME
-              gcloud --quiet config set container/cluster $CLUSTER_NAME
-              gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
-              gcloud --quiet container clusters get-credentials $CLUSTER_NAME
-              gcloud config set container/use_client_certificate True
-              ./deploy.sh
-            fi
+            echo $GCLOUD_SERVICE_KEY | base64 -d > ${HOME}/account-auth.json
+            gcloud auth activate-service-account --key-file ${HOME}/account-auth.json
+            gcloud config set project $PROJECT_NAME
+            gcloud --quiet config set container/cluster $CLUSTER_NAME
+            gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
+            gcloud --quiet container clusters get-credentials $CLUSTER_NAME
+            gcloud config set container/use_client_certificate True
+            ./deploy.sh
+
+workflows:
+  version: 2
+  test_and_deploy:
+    jobs:
+      - test
+      - deploy:
+          requires:
+          - test
+          filters:
+            branches:
+              only:
+                - master
