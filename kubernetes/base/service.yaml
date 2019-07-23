@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: trade-derby-service
+spec:
+  selector:
+    deployment: trade-derby
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 8666
+    targetPort: 8080

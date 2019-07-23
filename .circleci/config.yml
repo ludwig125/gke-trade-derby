@@ -40,7 +40,10 @@ jobs:
     description: Deploy application to Google Kubernetes Engine
     machine: true
     #executor: gcloud
+    #working_directory: ~/app
     steps:
+      # checkout project source code into the job’s working_directory
+      - checkout
       - run:
           name: Install dependencies
           command: |
@@ -55,6 +58,22 @@ jobs:
           deployment: trade-derby-web
           container: trade-derby-web
           image: gcr.io/${GOOGLE_PROJECT_ID}/trade-derby:latest
+      - run:
+          name: Install kustomize
+          command: |
+            opsys=linux  # or darwin, or windows
+            curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases |\
+                grep browser_download |\
+                grep $opsys |\
+                cut -d '"' -f 4 |\
+                head -n 1 |\
+                xargs curl -O -L
+            mv kustomize_*_${opsys}_amd64 kustomize
+            chmod u+x kustomize
+      - deploy:
+          name: Kustomize build and Apply
+          command: |
+            ./kustomize build ./kubernetes/overlays/dev/ | /usr/local/bin/kubectl apply -f -
   # deploy:
   #   working_directory: /app
   #   environment:
@@ -133,4 +152,5 @@ workflows:
             branches:
               only:
                 - master
+      #- deploy
 

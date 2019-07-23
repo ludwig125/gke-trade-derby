@@ -9,7 +9,6 @@ spec:
   selector:
     matchLabels:
       run: trade-derby-web
-  strategy: {}
   template:
     metadata:
       labels:
@@ -20,4 +19,3 @@ spec:
         name: trade-derby-web
         ports:
         - containerPort: 8080
-

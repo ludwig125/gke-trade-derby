@@ -1,12 +1,17 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
 	"time"
+)
+
+var (
+	number = flag.Int("number", 12345, "env number.")
 )
 
 func main() {
@@ -33,6 +38,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hostname: %s\n", host)
 	fmt.Fprintf(w, "cpu: %d\n", runtime.NumCPU())
 	fmt.Fprintf(w, "GOMAXPROCS: %d\n", runtime.GOMAXPROCS(0))
+	fmt.Fprintf(w, "ENV NUMBER: %d\n", number)
 
 	generator := func(done <-chan interface{}, integers ...int) <-chan int {
 		intStream := make(chan int)
