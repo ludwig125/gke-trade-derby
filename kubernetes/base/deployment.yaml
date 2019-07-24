@@ -17,7 +17,7 @@ spec:
       containers:
       - name: trade-derby-container
         image: gcr.io/gke-trade-derby/trade-derby:latest
-        command: ["/hello",
+        command: ["/trade-derby",
                   "--number=$(ENV_NUMBER)"]
         ports:
         - containerPort: 8080
