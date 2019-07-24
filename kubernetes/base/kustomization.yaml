@@ -1,0 +1,9 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+commonLabels:
+  app: trade-derby
+
+resources:
+- deployment.yaml
+- service.yaml
+- configMap.yaml
