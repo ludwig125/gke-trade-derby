@@ -39,13 +39,12 @@ jobs:
   deploy:
     description: Deploy application to Google Kubernetes Engine
     machine: true
-    #executor: gcloud
-    #working_directory: ~/app
     steps:
       # checkout project source code into the job’s working_directory
       - checkout
+      # Echo CIRCLE_SHA1. this is not necessary
       - run:
-          name: Install dependencies
+          name: Echo CIRCLE_SHA1
           command: |
             echo $CIRCLE_SHA1
       # Install `gcloud` and `kubectl` if not already installed.
@@ -73,7 +72,9 @@ jobs:
       - deploy:
           name: Kustomize build and Apply
           command: |
+            #./kubernetes/overlays/dev/build_deploy.sh "trade-derby:${CIRCLE_SHA1}"
             ./kustomize build ./kubernetes/overlays/dev/ | /usr/local/bin/kubectl apply -f -
+            sh kubernetes/overlays/patch.sh "dev-trade-derby"
   # deploy:
   #   working_directory: /app
   #   environment:

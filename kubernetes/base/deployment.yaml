@@ -17,6 +17,7 @@ spec:
       containers:
       - name: trade-derby-container
         image: gcr.io/gke-trade-derby/trade-derby:latest
+        imagePullPolicy: Always
         command: ["/trade-derby",
                   "--number=$(ENV_NUMBER)"]
         ports:

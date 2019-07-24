@@ -25,7 +25,7 @@ func main() {
 	server.HandleFunc("/", indexHandler)
 
 	// start the web server on port and accept requests
-	log.Printf("Server listening on port %s", port)
+	log.Printf("Server listening on port: %s", port)
 	err := http.ListenAndServe(":"+port, server)
 	log.Fatal(err)
 }
@@ -33,7 +33,7 @@ func main() {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Serving request: %s", r.URL.Path)
 	host, _ := os.Hostname()
-	fmt.Fprintf(w, "Hello, world! circleci kustomize\n")
+	fmt.Fprintf(w, "Hello, world! circleci kustomize12\n")
 	fmt.Fprintf(w, "Version: 1.0.0\n")
 	fmt.Fprintf(w, "Hostname: %s\n", host)
 	fmt.Fprintf(w, "cpu: %d\n", runtime.NumCPU())
