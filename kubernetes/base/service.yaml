@@ -1,12 +1,14 @@
 kind: Service
 apiVersion: v1
 metadata:
+  labels:
+    app: trade-derby
   name: trade-derby-service
 spec:
   selector:
-    deployment: trade-derby
+    app: trade-derby
   type: LoadBalancer
   ports:
   - protocol: TCP
-    port: 8666
+    port: 80
     targetPort: 8080
