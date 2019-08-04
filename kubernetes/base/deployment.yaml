@@ -28,4 +28,9 @@ spec:
             configMapKeyRef:
               name: the-map
               key: env_number
+        - name: ENVDATA  # Pod 内でこの環境変数名で参照できるようにする
+          valueFrom:
+            secretKeyRef:
+              name: kube-envdata  # シークレット名
+              key: envdata
 

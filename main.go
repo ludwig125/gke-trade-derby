@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"time"
 )
 
 var (
-	number = flag.Int("number", 12345, "env number.")
+	number  = flag.Int("number", 12345, "env number.")
+	envData = "default"
 )
 
 func main() {
@@ -20,6 +20,11 @@ func main() {
 	if fromEnv := os.Getenv("PORT"); fromEnv != "" {
 		port = fromEnv
 	}
+
+	if fromEnv := os.Getenv("ENVDATA"); fromEnv != "" {
+		envData = fromEnv
+	}
+	log.Printf("this is ENVDATA '%s'", envData)
 
 	server := http.NewServeMux()
 	server.HandleFunc("/", indexHandler)
@@ -38,70 +43,74 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hostname: %s\n", host)
 	fmt.Fprintf(w, "cpu: %d\n", runtime.NumCPU())
 	fmt.Fprintf(w, "GOMAXPROCS: %d\n", runtime.GOMAXPROCS(0))
-	fmt.Fprintf(w, "ENV NUMBER: %d\n", number)
 
-	generator := func(done <-chan interface{}, integers ...int) <-chan int {
-		intStream := make(chan int)
-		go func() {
-			defer close(intStream)
-			for _, i := range integers {
-				select {
-				case <-done:
-					return
-				case intStream <- i:
-				}
-			}
-		}()
-		return intStream
-	}
+	flag.Parse()
+	fmt.Fprintf(w, "ENV NUMBER: %d\n", *number)
 
-	multiply := func(
-		done <-chan interface{},
-		intStream <-chan int,
-		multiplier int,
-	) <-chan int {
-		multipliedStream := make(chan int)
-		go func() {
-			defer close(multipliedStream)
-			for i := range intStream {
-				select {
-				case <-done:
-					return
-				case multipliedStream <- i * multiplier:
-				}
-			}
-		}()
-		return multipliedStream
-	}
+	fmt.Fprintf(w, "ENV DATA: %s\n", envData)
 
-	add := func(
-		done <-chan interface{},
-		intStream <-chan int,
-		additive int,
-	) <-chan int {
-		addedStream := make(chan int)
-		go func() {
-			defer close(addedStream)
-			for i := range intStream {
-				select {
-				case <-done:
-					return
-				case addedStream <- i + additive:
-					time.Sleep(1 * time.Second)
-				}
-			}
-		}()
-		return addedStream
-	}
+	// generator := func(done <-chan interface{}, integers ...int) <-chan int {
+	// 	intStream := make(chan int)
+	// 	go func() {
+	// 		defer close(intStream)
+	// 		for _, i := range integers {
+	// 			select {
+	// 			case <-done:
+	// 				return
+	// 			case intStream <- i:
+	// 			}
+	// 		}
+	// 	}()
+	// 	return intStream
+	// }
 
-	done := make(chan interface{})
-	defer close(done)
+	// multiply := func(
+	// 	done <-chan interface{},
+	// 	intStream <-chan int,
+	// 	multiplier int,
+	// ) <-chan int {
+	// 	multipliedStream := make(chan int)
+	// 	go func() {
+	// 		defer close(multipliedStream)
+	// 		for i := range intStream {
+	// 			select {
+	// 			case <-done:
+	// 				return
+	// 			case multipliedStream <- i * multiplier:
+	// 			}
+	// 		}
+	// 	}()
+	// 	return multipliedStream
+	// }
 
-	intStream := generator(done, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-	pipeline := multiply(done, add(done, multiply(done, intStream, 2), 1), 2)
+	// add := func(
+	// 	done <-chan interface{},
+	// 	intStream <-chan int,
+	// 	additive int,
+	// ) <-chan int {
+	// 	addedStream := make(chan int)
+	// 	go func() {
+	// 		defer close(addedStream)
+	// 		for i := range intStream {
+	// 			select {
+	// 			case <-done:
+	// 				return
+	// 			case addedStream <- i + additive:
+	// 				time.Sleep(1 * time.Second)
+	// 			}
+	// 		}
+	// 	}()
+	// 	return addedStream
+	// }
 
-	for v := range pipeline {
-		t := time.Now()
-		fmt.Fprintf(w, "time: %s result %d\n", t.String(), v)
-	}
+	// done := make(chan interface{})
+	// defer close(done)
+
+	// intStream := generator(done, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+	// pipeline := multiply(done, add(done, multiply(done, intStream, 2), 1), 2)
+
+	// for v := range pipeline {
+	// 	t := time.Now()
+	// 	fmt.Fprintf(w, "time: %s result %d\n", t.String(), v)
+	// }
 }

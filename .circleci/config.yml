@@ -46,6 +46,7 @@ jobs:
       - run:
           name: Echo CIRCLE_SHA1
           command: |
+            echo ${ENVDATA}
             echo $CIRCLE_SHA1
       # Install `gcloud` and `kubectl` if not already installed.
       - gcp-gke/install
@@ -69,6 +70,12 @@ jobs:
                 xargs curl -O -L
             mv kustomize_*_${opsys}_amd64 kustomize
             chmod u+x kustomize
+      - run:
+          name: Create secret
+          command: |
+            echo -n ${ENVDATA} > ./envdata
+            kubectl create secret generic --save-config kube-envdata --from-file=./envdata
+            kubectl get secrets kube-envdata -o json | jq .data
       - deploy:
           name: Kustomize build and Apply
           command: |
