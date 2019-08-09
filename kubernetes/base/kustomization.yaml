@@ -7,3 +7,10 @@ resources:
 - deployment.yaml
 - service.yaml
 - configMap.yaml
+
+generatorOptions:
+  disableNameSuffixhash: true
+secretGenerator:
+- name: kube-envdata
+  files:
+  - envdata=envdata.txt
