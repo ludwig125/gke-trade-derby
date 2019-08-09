@@ -73,9 +73,9 @@ jobs:
       - run:
           name: Create secret
           command: |
-            echo -n ${ENVDATA} > ./envdata
-            kubectl create secret generic --save-config kube-envdata --from-file=./envdata
-            kubectl get secrets kube-envdata -o json | jq .data
+            echo -n ${ENVDATA} > ./kubernetes/base/envdata.txt
+            # kubectl create secret generic --save-config kube-envdata --from-file=./envdata
+            # kubectl get secrets kube-envdata -o json | jq .data
       - deploy:
           name: Kustomize build and Apply
           command: |
