@@ -16,8 +16,8 @@ secretGenerator:
   - envdata=envdata.txt
 - name: user
   files:
-  - user=username.txt
+  - username=username.txt
 - name: pass
   files:
-  - pass=password.txt
+  - password=password.txt
 
