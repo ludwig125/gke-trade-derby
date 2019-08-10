@@ -14,3 +14,10 @@ secretGenerator:
 - name: kube-envdata
   files:
   - envdata=envdata.txt
+- name: user
+  files:
+  - user=username.txt
+- name: pass
+  files:
+  - pass=password.txt
+

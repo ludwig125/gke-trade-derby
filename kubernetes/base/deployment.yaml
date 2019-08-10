@@ -33,4 +33,14 @@ spec:
             secretKeyRef:
               name: kube-envdata  # シークレット名
               key: envdata
+        - name: APPUSER
+          valueFrom:
+            secretKeyRef:
+              name: user
+              key: username
+        - name: APPPASS
+          valueFrom:
+            secretKeyRef:
+              name: pass
+              key: password
 
