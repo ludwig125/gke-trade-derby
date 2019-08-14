@@ -7,8 +7,6 @@ import (
 )
 
 func TestScrape(t *testing.T) {
-	// fmt.Printf("cpu: %d\n", runtime.NumCPU())
-	// fmt.Printf("GOMAXPROCS: %d\n", runtime.GOMAXPROCS(0))
 	t.Run("testfetchStockInfoDoc", func(t *testing.T) {
 		testFetchStockInfo(t)
 	})
@@ -21,13 +19,15 @@ func testFetchStockInfo(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Log("stockInfos: ", stockInfos)
-	wantCode := []string{"1417", "6088", "6367", "6981", "7821", "9759", "9902"}
-	var gotCode []string
-	for _, v := range stockInfos {
-		gotCode = append(gotCode, v.Code)
+	//t.Log("stockInfos: ", stockInfos)
+	wantStockInfos := []stockInfo{
+		stockInfo{"1417", "ミライトHD", "信用売"},
+		stockInfo{"6088", "シグマクシス", "現物買"},
+		stockInfo{"6367", "ダイキン", "現物買"},
+		stockInfo{"9759", "NSD", "信用売"},
 	}
-	if !reflect.DeepEqual(gotCode, wantCode) {
-		t.Fatalf("scraped code: %#v, want code: %#v", gotCode, wantCode)
+
+	if !reflect.DeepEqual(stockInfos, wantStockInfos) {
+		t.Fatalf("scraped stockInfos: %#v, wantStockInfos: %#v", stockInfos, wantStockInfos)
 	}
 }

@@ -5,10 +5,28 @@ orbs:
 executors:
   golang:
     docker:
-    - image: circleci/golang:1.12.2
+    - image: circleci/golang:1.12.2-browsers
       user: root
     environment:
     - GO111MODULE: "on"
+
+commands:
+  go_mod_download:
+    steps:
+      # もし前回のWorkflow時に保存したキャッシュが利用できるなら再利用する
+      - restore_cache:
+          name: Restore go modules cache
+          keys:
+              - v1-mod-{{ .Branch }}-{{ checksum "go.mod" }}
+      - run:
+          name: Vendoring
+          command: go mod download
+      # ダウンロードしたmoduleをCircleCIにキャッシュとして保存しておく
+      - save_cache:
+          name: Save go modules cache
+          key: v1-mod-{{ .Branch }}-{{ checksum "go.mod" }}
+          paths:
+              - /go/pkg/mod/cache
 
 jobs:
   # 事前にもろもろのダウンロードなどを済ませておくジョブ
@@ -49,7 +67,7 @@ jobs:
           command: go build
       - run:
           name: test
-          command: APPUSER=user APPPASS=123 go test ./...
+          command: APPUSER=user APPPASS=123 TRADEDERBY_SHEETID=123 CREDENTIAL_FILEPATH=./test/test-serviceaccount.json go test -v ./...
   Build-Push-Image-Docker:
     description: Build and push image to Google Container Registry
     machine: true
@@ -66,6 +84,26 @@ jobs:
           image: trade-derby
           source-tag: $CIRCLE_SHA1
           target-tag: latest
+  # Build-Push-Image-Docker:
+  #   description: Build and push image to Google Container Registry
+  #   machine: true
+  #   executor: golang
+  #   steps:
+  #     - checkout
+  #     # - attach_workspace:
+  #     #     at: /go
+  #     - go_mod_download
+  #     - gcp-gcr/gcr-auth
+  #     - gcp-gcr/build-image:
+  #         image: trade-derby
+  #         tag: $CIRCLE_SHA1
+  #     - gcp-gcr/push-image:
+  #         image: trade-derby
+  #         tag: $CIRCLE_SHA1
+  #     - gcp-gcr/tag-image:
+  #         image: trade-derby
+  #         source-tag: $CIRCLE_SHA1
+  #         target-tag: latest
   deploy:
     description: Deploy application to Google Kubernetes Engine
     machine: true
@@ -81,12 +119,12 @@ jobs:
       - gcp-gke/install
       # Initialize the `gcloud` CLI.
       - gcp-gke/init
-      # Update a deployment Docker image.
-      - gcp-gke/rollout-image:
-          cluster: trade-derby-small-cluster
-          deployment: trade-derby-web
-          container: trade-derby-web
-          image: gcr.io/${GOOGLE_PROJECT_ID}/trade-derby:latest
+      # # Update a deployment Docker image.
+      # - gcp-gke/rollout-image:
+      #     cluster: trade-derby-small-cluster
+      #     deployment: trade-derby-web
+      #     container: trade-derby-web
+      #     image: gcr.io/${GOOGLE_PROJECT_ID}/trade-derby:latest
       - run:
           name: Install kustomize
           command: |
@@ -102,8 +140,10 @@ jobs:
       - run:
           name: Create secret
           command: |
-            echo -n ${USERNAME} > ./kubernetes/base/username.txt
-            echo -n ${PASSWORD} > ./kubernetes/base/password.txt
+            echo -n ${TRADEDERBY_USERNAME} > ./kubernetes/base/username.txt
+            echo ${TRADEDERBY_PASSWORD} | base64 -d > ./kubernetes/base/password.txt
+            echo -n ${TRADEDERBY_SHEETID} > ./kubernetes/base/tradederby_sheetid.txt
+            echo ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -d  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
       - deploy:
           name: Kustomize build and Apply
           command: |
@@ -114,13 +154,18 @@ workflows:
   version: 2
   test_and_deploy:
     jobs:
-      - setup
-      - test:
-          requires:
-            - setup
-      - Build-Push-Image-Docker:
-          requires:
-            - test
+      # - setup
+      # - test:
+      #     requires:
+      #       - setup
+      # - Build-Push-Image-Docker:
+      #     requires:
+      #       - test
+      # - setup
+      # - Build-Push-Image-Docker:
+      #     requires:
+      #       - setup
+      - Build-Push-Image-Docker
       - deploy:
           requires:
           - Build-Push-Image-Docker

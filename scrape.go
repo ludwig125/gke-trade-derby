@@ -30,7 +30,8 @@ func fetchStockInfo(html string) ([]stockInfo, error) {
 				status = td.Text()
 			}
 		})
-		stockInfos = append(stockInfos, stockInfo{Code: codeName[:4], Name: codeName[4:], Status: status})
+		// CodeはcodeNameの最初の４文字、NameはcodeNameの６文字目以降（５文字目は半角スペース）
+		stockInfos = append(stockInfos, stockInfo{Code: codeName[:4], Name: codeName[5:], Status: status})
 	})
 
 	if stockInfos == nil {

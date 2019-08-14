@@ -3,14 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/sclevine/agouti"
 )
-
-// var (
-// 	myStockInfoURL = "https://www.k-zone.co.jp/td/dashboards/position_hold?lang=ja"
-// )
 
 // use agouti
 // https://godoc.org/github.com/sclevine/agouti
@@ -69,9 +64,9 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 
 	// passwordの要素を取得し、値を設定
 	password := page.FindByName("password")
-	password.Fill(pass))
+	password.Fill(pass)
 
-	time.Sleep(1 * time.Second)
+	//time.Sleep(1 * time.Second)
 	if err := page.FindByID("login_button").Submit(); err != nil {
 		return fmt.Errorf("Failed to confirm password: %v", err)
 	}
@@ -82,7 +77,7 @@ func fetchStockDoc(page *agouti.Page, stockInfoURL string) (string, error) {
 	if err := page.Navigate(stockInfoURL); err != nil {
 		return "", fmt.Errorf("Failed to navigate bookstore page: %v", err)
 	}
-	time.Sleep(1 * time.Second)
+	//time.Sleep(1 * time.Second)
 
 	html, err := page.HTML()
 	if err != nil {

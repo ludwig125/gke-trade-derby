@@ -38,4 +38,16 @@ spec:
             secretKeyRef:
               name: kube-pass
               key: password
-
+        - name: TRADEDERBY_SHEETID
+          valueFrom:
+            secretKeyRef:
+              name: kube-tradederby-sheetid
+              key: tradederby_sheetid
+        volumeMounts:
+          - name: trade-derby-serviceaccount-volume
+            mountPath: /etc/tradederby
+            readOnly: true
+      volumes:
+      - name: trade-derby-serviceaccount-volume
+        secret:
+          secretName: kube-trade-derby-serviceaccount

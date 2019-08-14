@@ -13,11 +13,15 @@ import (
 )
 
 var (
-	number    = flag.Int("number", 12345, "env number.")
-	debug     = flag.Bool("debug", false, "Use Debug Mode?")
-	debugUser = flag.String("debuguser", "", "Debug User")
-	user      = "noset"
-	pass      = "noset"
+	number             = flag.Int("number", 12345, "env number.")
+	debug              = flag.Bool("debug", false, "Use Debug Mode?")
+	debugUser          = flag.String("debuguser", "", "Debug User")
+	debugSheetID       = flag.String("debugsheetid", "", "Debug SheetID")
+	user               = "noset"
+	pass               = "noset"
+	sheetID            = ""
+	credentialFilePath = ""
+	credentialFile     = ""
 )
 
 type stockInfo struct {
@@ -35,18 +39,34 @@ func mustGetenv(k string) string {
 	return v
 }
 
+func fileMustExists(name string) string {
+	_, err := os.Stat(name)
+	if os.IsNotExist(err) {
+		log.Fatalf("file '%s' does not exists", name)
+	}
+	return name
+}
+
 func init() {
 	flag.Parse()
 
 	log.Printf("use debug mode?: %t", *debug)
 	if *debug {
+		// localで実行する場合はdebug modeを利用してリアクティブに実行する
 		// debug modeの場合はdebuguserをオプションで指定し、passwordを入力する
+
 		u := *debugUser
 		if u == "" {
-			log.Fatal("debuguser noset. if you use debug=true, set debuguser")
+			log.Fatal("debugUser noset. if you use debug=true, set debugUser")
 		}
 		user = u
-		log.Println("set debuguser:", u)
+
+		s := *debugSheetID
+		if s == "" {
+			log.Fatal("debugSheetID noset. if you use debug=true, set debugSheetID")
+		}
+		sheetID = s
+		credentialFilePath = fileMustExists("./gke-trade-derby-serviceaccount.json")
 
 		fmt.Print("Password: ")
 		p, err := terminal.ReadPassword(int(syscall.Stdin))
@@ -54,12 +74,20 @@ func init() {
 			log.Fatal("Failed to read password", err)
 		}
 		pass = string(p)
-		log.Println("set debugpass")
+		log.Println("set debug infos")
 	} else {
-		// GKEから実行する場合は環境変数から取得する
+		// testまたはGKEから実行する場合は環境変数から取得する
 		user = mustGetenv("APPUSER")
 		pass = mustGetenv("APPPASS")
+		sheetID = mustGetenv("TRADEDERBY_SHEETID")
+
+		credentialFilePath = mustGetenv("CREDENTIAL_FILEPATH")
+		// testで実行される際には"./test/test-serviceaccount.json"
+		// GKEで実行される際には"/etc/tradederby/gke-trade-derby-serviceaccount.json"
+		credentialFile = fileMustExists(credentialFilePath)
+		log.Println("set env infos")
 	}
+
 }
 
 func main() {
@@ -99,4 +127,34 @@ func tradeDerby(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	fmt.Println(stockInfos)
+
+	// stockInfos := []stockInfo{
+	// 	stockInfo{"1417", "ミライトHD", "信用売"},
+	// 	stockInfo{"6088", "シグマクシス", "現物買"},
+	// 	stockInfo{"6367", "ダイキン", "現物買"},
+	// 	stockInfo{"9759", "NSD", "信用売"},
+	// }
+
+	var sIfs [][]interface{}
+	for _, s := range stockInfos {
+		var sIf []interface{}
+		sIf = append(sIf, s.Code)
+		sIf = append(sIf, s.Name)
+		sIf = append(sIf, s.Status)
+		sIfs = append(sIfs, sIf)
+	}
+	log.Println(sIfs)
+
+	// spreadsheetのclientを取得
+	srv, err := getSheetClient()
+	if err != nil {
+		log.Fatalf("failed to get sheet client. err: %v", err)
+	}
+	log.Println("succeeded to get sheet client")
+
+	log.Println("trying to write sheet")
+	if err := clearAndWriteSheet(srv, sheetID, "trade-derby", sIfs); err != nil {
+		log.Fatalf("failed to clearAndWriteSheet. %v", err)
+	}
+	log.Println("succeeded to write sheet")
 }

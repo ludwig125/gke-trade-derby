@@ -17,4 +17,9 @@ secretGenerator:
 - name: kube-pass
   files:
   - password=password.txt
-
+- name: kube-tradederby-sheetid
+  files:
+  - tradederby_sheetid=tradederby_sheetid.txt
+- name: kube-trade-derby-serviceaccount
+  files:
+  - gke-trade-derby-serviceaccount.json
