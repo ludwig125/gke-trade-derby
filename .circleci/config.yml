@@ -76,7 +76,6 @@ jobs:
       - run:
           name: Echo CIRCLE_SHA1
           command: |
-            echo ${ENVDATA}
             echo $CIRCLE_SHA1
       # Install `gcloud` and `kubectl` if not already installed.
       - gcp-gke/install
@@ -103,7 +102,6 @@ jobs:
       - run:
           name: Create secret
           command: |
-            echo -n ${ENVDATA} > ./kubernetes/base/envdata.txt
             echo -n ${USERNAME} > ./kubernetes/base/username.txt
             echo -n ${PASSWORD} > ./kubernetes/base/password.txt
       - deploy:
