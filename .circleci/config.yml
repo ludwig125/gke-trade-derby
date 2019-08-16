@@ -5,18 +5,51 @@ orbs:
 executors:
   golang:
     docker:
-    - image: circleci/golang:1.12
+    - image: circleci/golang:1.12.2
+      user: root
+    environment:
+    - GO111MODULE: "on"
+
 jobs:
+  # 事前にもろもろのダウンロードなどを済ませておくジョブ
+  setup:
+    executor:
+      name: golang
+    steps:
+      - checkout
+      # もし前回のWorkflow時に保存したキャッシュが利用できるなら再利用する
+      - restore_cache:
+          name: Restore go modules cache
+          keys:
+              - v1-mod-{{ .Branch }}-{{ checksum "go.mod" }}
+      - run:
+          name: Vendoring
+          command: go mod download
+      # ダウンロードしたmoduleをCircleCIにキャッシュとして保存しておく
+      - save_cache:
+          name: Save go modules cache
+          key: v1-mod-{{ .Branch }}-{{ checksum "go.mod" }}
+          paths:
+              - /go/pkg/mod/cache
+      - persist_to_workspace:
+          root: /go
+          paths:
+            - src
+            - bin
+            - pkg/mod/cache
+
   test:
     executor: golang
     steps:
       - checkout
+      - attach_workspace:
+          at: /go
       - run:
           name: build
           command: go build
       - run:
           name: test
-          command: APPUSER=user APPPASS=123 go test
+          command: APPUSER=user APPPASS=123 go test ./...
   Build-Push-Image-Docker:
     description: Build and push image to Google Container Registry
     machine: true
@@ -83,7 +116,10 @@ workflows:
   version: 2
   test_and_deploy:
     jobs:
-      - test
+      - setup
+      - test:
+          requires:
+            - setup
       - Build-Push-Image-Docker:
           requires:
             - test
