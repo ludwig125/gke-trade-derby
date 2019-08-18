@@ -1,0 +1,75 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+
+<body>        
+
+<div class="modalArea modalMiddle">
+  <div class="titleArea">新規会員登録 / ログイン</div>
+
+  <div id="errorTextArea" class="errorText" style="display: none;">
+    <div class="error" id="targetMESSAGES"></div>
+  </div>
+
+  <div class="new">
+    <div class="newTitle">新規会員登録</div>
+    <div class="accedeMessage">参加登録をご希望の方は、 必ず
+      <a href="#" class="popup large" data-popurl="/td/statics/game_agreement?pop_flg=true">ゲーム参加規約</a>、及び
+      <a href="#" class="popup large" data-popurl="/td/statics/membership_agreement?pop_flg=true">ケイゾン会員規約</a>、
+      <a href="#" class="popup large" data-popurl="/td/statics/privacy_policy?pop_flg=true">プライバシーポリシー</a>、
+      <a href="#" class="popup large" data-popurl="/td/statics/personal_information?pop_flg=true">個人情報の取扱について</a>、
+      <a href="#" class="popup large" data-popurl="/td/statics/security_policy?pop_flg=true">セキュリティポリシー</a>に同意した上で手続きを進めてください。</div>
+    <a href="/td/users/new" class="joint">参加登録<img src="/pc/images/icon/icon_transition_white_large-trans.png" width="13" height="20" alt="" class="transition"></a>
+    <div class="serviceIcon">
+
+お持ちの外部サービスアカウントで参加登録<br/><br/>
+  <a href="/td/users/fb_new"><img src="/pc/images/icon/icon_facebook-trans.png" width="26" height="26" alt="" class="transition"></a>
+  <a href="/td/users/tw_new"><img src="/pc/images/icon/icon_twitter-trans.png" width="26" height="26" alt="" class="transition"></a>
+  <a href="/td/users/go_new"><img src="/pc/images/icon/icon_google-trans.png" width="26" height="26" alt="" class="transition"></a>
+  <a href="/td/users/yh_new"><img src="/pc/images/icon/icon_yahoo-trans.png" width="26" height="26" alt="" class="transition"></a>
+</div>
+  </div>
+  <div class="login">
+    <div class="loginTitle">ログイン</div>
+      <form name="form_login" action="/td/users/login" method="post">
+        <div class="formAll mt15">
+          <table>
+          	<tbody>
+            <tr>
+              <td><input name="login" type="text" id="login_id" class="formDesign" placeholder="メールアドレス　またはログインID" /></td>
+            </tr>
+            <tr>
+              <td><input name="password" type="password" id="password" class="formDesign" placeholder="パスワード" /></td>
+            </tr>
+ 	        </tbody>
+          </table>
+          <br />
+          <input id="remember_me" name="remember_me" type="checkbox" checked="checked" value="true" data-toggle="checkbox">ログイン状態を保持 
+        </div>
+        <div><a href="/td/users/forgotten" class="middle pl40">パスワードをお忘れの方へ</a></div>
+        <div class="mt7"><a href="/td/users/registration_user_confirm?refs=reg_user_confirm_login_pc" class="middle pl40">ご登録の覚えがない方へ</a></div>
+        <button type="submit" id="login_button" >ログイン<img src="/pc/images/icon/icon_transition_white_large-trans.png" width="13" height="20" alt="" class="transition"></button>
+        </form>
+        <div class="serviceIcon">
+    <div class="serviceIcon">
+お持ちの外部サービスアカウントでログイン<br/><br/>
+  <a href="/td/users/fb_new"><img src="/pc/images/icon/icon_facebook-trans.png" width="26" height="26" alt="" class="transition"></a>
+  <a href="/td/users/tw_new"><img src="/pc/images/icon/icon_twitter-trans.png" width="26" height="26" alt="" class="transition"></a>
+  <a href="/td/users/go_new"><img src="/pc/images/icon/icon_google-trans.png" width="26" height="26" alt="" class="transition"></a>
+  <a href="/td/users/yh_new"><img src="/pc/images/icon/icon_yahoo-trans.png" width="26" height="26" alt="" class="transition"></a>
+</div>
+    </div>
+  </div>
+  
+  </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--▲メインコンテンツエリア-->
+
+  </div>
+
+</body>
+</html>

@@ -11,13 +11,15 @@ resources:
 generatorOptions:
   disableNameSuffixhash: true
 secretGenerator:
-- name: kube-envdata
-  files:
-  - envdata=envdata.txt
-- name: user
+- name: kube-user
   files:
   - username=username.txt
-- name: pass
+- name: kube-pass
   files:
   - password=password.txt
-
+- name: kube-tradederby-sheetid
+  files:
+  - tradederby_sheetid=tradederby_sheetid.txt
+- name: kube-trade-derby-serviceaccount
+  files:
+  - gke-trade-derby-serviceaccount.json

@@ -4,3 +4,4 @@ metadata:
   name: the-map
 data:
   env_number: "1234"
+  credential_filepath: "/etc/tradederby/gke-trade-derby-serviceaccount.json"

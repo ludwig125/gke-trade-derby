@@ -5,7 +5,7 @@ orbs:
 executors:
   golang:
     docker:
-    - image: circleci/golang:1.12.2
+    - image: circleci/golang:1.12.2-browsers
       user: root
     environment:
     - GO111MODULE: "on"
@@ -49,7 +49,7 @@ jobs:
           command: go build
       - run:
           name: test
-          command: APPUSER=user APPPASS=123 go test ./...
+          command: APPUSER=user APPPASS=123 TRADEDERBY_SHEETID=123 CREDENTIAL_FILEPATH=./test/test-serviceaccount.json go test -v ./...
   Build-Push-Image-Docker:
     description: Build and push image to Google Container Registry
     machine: true
@@ -66,6 +66,7 @@ jobs:
           image: trade-derby
           source-tag: $CIRCLE_SHA1
           target-tag: latest
+ 
   deploy:
     description: Deploy application to Google Kubernetes Engine
     machine: true
@@ -76,18 +77,17 @@ jobs:
       - run:
           name: Echo CIRCLE_SHA1
           command: |
-            echo ${ENVDATA}
             echo $CIRCLE_SHA1
       # Install `gcloud` and `kubectl` if not already installed.
       - gcp-gke/install
       # Initialize the `gcloud` CLI.
       - gcp-gke/init
-      # Update a deployment Docker image.
-      - gcp-gke/rollout-image:
-          cluster: trade-derby-small-cluster
-          deployment: trade-derby-web
-          container: trade-derby-web
-          image: gcr.io/${GOOGLE_PROJECT_ID}/trade-derby:latest
+      # # Update a deployment Docker image.
+      # - gcp-gke/rollout-image:
+      #     cluster: trade-derby-small-cluster
+      #     deployment: trade-derby-web
+      #     container: trade-derby-web
+      #     image: gcr.io/${GOOGLE_PROJECT_ID}/trade-derby:latest
       - run:
           name: Install kustomize
           command: |
@@ -103,9 +103,10 @@ jobs:
       - run:
           name: Create secret
           command: |
-            echo -n ${ENVDATA} > ./kubernetes/base/envdata.txt
-            echo -n ${USERNAME} > ./kubernetes/base/username.txt
-            echo -n ${PASSWORD} > ./kubernetes/base/password.txt
+            echo -n ${TRADEDERBY_USERNAME} > ./kubernetes/base/username.txt
+            echo ${TRADEDERBY_PASSWORD} | base64 -d > ./kubernetes/base/password.txt
+            echo -n ${TRADEDERBY_SHEETID} > ./kubernetes/base/tradederby_sheetid.txt
+            echo ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -d  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
       - deploy:
           name: Kustomize build and Apply
           command: |
@@ -130,5 +131,5 @@ workflows:
             branches:
               only:
                 - master
-      #- deploy
+
 
