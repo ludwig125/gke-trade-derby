@@ -10,24 +10,6 @@ executors:
     environment:
     - GO111MODULE: "on"
 
-commands:
-  go_mod_download:
-    steps:
-      # もし前回のWorkflow時に保存したキャッシュが利用できるなら再利用する
-      - restore_cache:
-          name: Restore go modules cache
-          keys:
-              - v1-mod-{{ .Branch }}-{{ checksum "go.mod" }}
-      - run:
-          name: Vendoring
-          command: go mod download
-      # ダウンロードしたmoduleをCircleCIにキャッシュとして保存しておく
-      - save_cache:
-          name: Save go modules cache
-          key: v1-mod-{{ .Branch }}-{{ checksum "go.mod" }}
-          paths:
-              - /go/pkg/mod/cache
-
 jobs:
   # 事前にもろもろのダウンロードなどを済ませておくジョブ
   setup:
@@ -84,26 +66,7 @@ jobs:
           image: trade-derby
           source-tag: $CIRCLE_SHA1
           target-tag: latest
-  # Build-Push-Image-Docker:
-  #   description: Build and push image to Google Container Registry
-  #   machine: true
-  #   executor: golang
-  #   steps:
-  #     - checkout
-  #     # - attach_workspace:
-  #     #     at: /go
-  #     - go_mod_download
-  #     - gcp-gcr/gcr-auth
-  #     - gcp-gcr/build-image:
-  #         image: trade-derby
-  #         tag: $CIRCLE_SHA1
-  #     - gcp-gcr/push-image:
-  #         image: trade-derby
-  #         tag: $CIRCLE_SHA1
-  #     - gcp-gcr/tag-image:
-  #         image: trade-derby
-  #         source-tag: $CIRCLE_SHA1
-  #         target-tag: latest
+ 
   deploy:
     description: Deploy application to Google Kubernetes Engine
     machine: true
@@ -154,18 +117,13 @@ workflows:
   version: 2
   test_and_deploy:
     jobs:
-      # - setup
-      # - test:
-      #     requires:
-      #       - setup
-      # - Build-Push-Image-Docker:
-      #     requires:
-      #       - test
-      # - setup
-      # - Build-Push-Image-Docker:
-      #     requires:
-      #       - setup
-      - Build-Push-Image-Docker
+      - setup
+      - test:
+          requires:
+            - setup
+      - Build-Push-Image-Docker:
+          requires:
+            - test
       - deploy:
           requires:
           - Build-Push-Image-Docker
@@ -173,5 +131,5 @@ workflows:
             branches:
               only:
                 - master
-      #- deploy
+
 
