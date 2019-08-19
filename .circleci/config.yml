@@ -106,7 +106,8 @@ jobs:
             echo -n ${TRADEDERBY_USERNAME} > ./kubernetes/base/username.txt
             echo -n ${TRADEDERBY_PASSWORD} | base64 -d > ./kubernetes/base/password.txt
             echo -n ${TRADEDERBY_SHEETID} > ./kubernetes/base/tradederby_sheetid.txt
-            echo -n ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -d  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
+            # base64 -i ignore non-alphabet characters
+            echo -n ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -di  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
       - deploy:
           name: Kustomize build and Apply
           command: |

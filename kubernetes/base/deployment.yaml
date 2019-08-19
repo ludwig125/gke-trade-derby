@@ -23,6 +23,11 @@ spec:
         ports:
         - containerPort: 8080
         env:
+        - name: CREDENTIAL_FILEPATH
+          valueFrom:
+            configMapKeyRef:
+              name: the-map
+              key: credential_filepath
         - name: ENV_NUMBER
           valueFrom:
             configMapKeyRef:
