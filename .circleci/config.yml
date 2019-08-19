@@ -104,9 +104,9 @@ jobs:
           name: Create secret
           command: |
             echo -n ${TRADEDERBY_USERNAME} > ./kubernetes/base/username.txt
-            echo ${TRADEDERBY_PASSWORD} | base64 -d > ./kubernetes/base/password.txt
+            echo -n ${TRADEDERBY_PASSWORD} | base64 -d > ./kubernetes/base/password.txt
             echo -n ${TRADEDERBY_SHEETID} > ./kubernetes/base/tradederby_sheetid.txt
-            echo ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -d  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
+            echo -n ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -d  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
       - deploy:
           name: Kustomize build and Apply
           command: |
