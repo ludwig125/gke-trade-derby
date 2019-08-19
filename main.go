@@ -36,6 +36,7 @@ func mustGetenv(k string) string {
 		log.Fatalf("%s environment variable not set.", k)
 	}
 	log.Printf("%s environment variable set.", k)
+	//log.Println("this is env", k, ":", v)
 	return v
 }
 
