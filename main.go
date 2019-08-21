@@ -20,6 +20,7 @@ var (
 	user               = "noset"
 	pass               = "noset"
 	sheetID            = ""
+	credentialFileDir  = "credential"
 	credentialFilePath = ""
 )
 
@@ -50,10 +51,6 @@ func fileMustExists(name string) string {
 func init() {
 	flag.Parse()
 
-	// Sheetをみにいくためのserviceaccountの置き場所
-	// ローカルでもGKEでも同じになるようにvolumeのmountPathなどを調節している
-	credentialFilePath = fileMustExists("credential/gke-trade-derby-serviceaccount.json")
-
 	log.Printf("use debug mode?: %t", *debug)
 	if *debug {
 		// localで実行する場合はdebug modeを利用してリアクティブに実行する
@@ -83,6 +80,17 @@ func init() {
 		user = mustGetenv("APPUSER")
 		pass = mustGetenv("APPPASS")
 		sheetID = mustGetenv("TRADEDERBY_SHEETID")
+
+		// test用
+		cdir := os.Getenv("CREDENTIALFILE_DIR")
+		if cdir != "" {
+			credentialFileDir = cdir
+		}
+
+		// Sheetをみにいくためのserviceaccountの置き場所
+		// ローカルでもGKEでも同じになるようにvolumeのmountPathなどを調節している
+		credentialFilePath = fileMustExists(credentialFileDir + "/gke-trade-derby-serviceaccount.json")
+
 		log.Println("set env infos")
 	}
 

@@ -49,7 +49,7 @@ jobs:
           command: go build
       - run:
           name: test
-          command: APPUSER=user APPPASS=123 TRADEDERBY_SHEETID=123 CREDENTIAL_FILEPATH=./test/test-serviceaccount.json go test -v ./...
+          command: APPUSER=user APPPASS=123 TRADEDERBY_SHEETID=123 CREDENTIALFILE_DIR=./test go test -v ./...
   Build-Push-Image-Docker:
     description: Build and push image to Google Container Registry
     machine: true
