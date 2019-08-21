@@ -20,8 +20,8 @@ var (
 	user               = "noset"
 	pass               = "noset"
 	sheetID            = ""
+	credentialFileDir  = "credential"
 	credentialFilePath = ""
-	credentialFile     = ""
 )
 
 type stockInfo struct {
@@ -67,7 +67,6 @@ func init() {
 			log.Fatal("debugSheetID noset. if you use debug=true, set debugSheetID")
 		}
 		sheetID = s
-		credentialFilePath = fileMustExists("./gke-trade-derby-serviceaccount.json")
 
 		fmt.Print("Password: ")
 		p, err := terminal.ReadPassword(int(syscall.Stdin))
@@ -82,10 +81,16 @@ func init() {
 		pass = mustGetenv("APPPASS")
 		sheetID = mustGetenv("TRADEDERBY_SHEETID")
 
-		credentialFilePath = mustGetenv("CREDENTIAL_FILEPATH")
-		// testで実行される際には"./test/test-serviceaccount.json"
-		// GKEで実行される際には"/etc/tradederby/gke-trade-derby-serviceaccount.json"
-		credentialFile = fileMustExists(credentialFilePath)
+		// test用
+		cdir := os.Getenv("CREDENTIALFILE_DIR")
+		if cdir != "" {
+			credentialFileDir = cdir
+		}
+
+		// Sheetをみにいくためのserviceaccountの置き場所
+		// ローカルでもGKEでも同じになるようにvolumeのmountPathなどを調節している
+		credentialFilePath = fileMustExists(credentialFileDir + "/gke-trade-derby-serviceaccount.json")
+
 		log.Println("set env infos")
 	}
 

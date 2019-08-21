@@ -23,6 +23,11 @@ spec:
         ports:
         - containerPort: 8080
         env:
+        - name: CREDENTIAL_FILEPATH
+          valueFrom:
+            configMapKeyRef:
+              name: the-map
+              key: credential_filepath
         - name: ENV_NUMBER
           valueFrom:
             configMapKeyRef:
@@ -44,10 +49,12 @@ spec:
               name: kube-tradederby-sheetid
               key: tradederby_sheetid
         volumeMounts:
-          - name: trade-derby-serviceaccount-volume
-            mountPath: /etc/tradederby
+          - name: serviceaccount-volume
+            mountPath: credential
             readOnly: true
       volumes:
-      - name: trade-derby-serviceaccount-volume
+      - name: serviceaccount-volume
         secret:
           secretName: kube-trade-derby-serviceaccount
+          items:
+          - path: gke-trade-derby-serviceaccount.json
