@@ -1,2 +1,6 @@
 service_account.json
 gke-trade-derby-serviceaccount.json
+username.txt
+password.txt
+tradederby_sheetid.txt
+gke-trade-derby-serviceaccount.json
