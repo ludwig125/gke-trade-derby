@@ -11,9 +11,9 @@ COPY go.sum .
 RUN go mod download
 COPY . .
 
-RUN CGO_ENABLED=0 go build -o /go/src/trade-derby
+RUN CGO_ENABLED=0 go build -o /go/bin/trade-derby
 
 FROM alpine:latest
-COPY --from=build-step /go/src/trade-derby /go/src/trade-derby
+COPY --from=build-step /go/bin/trade-derby /go/bin/trade-derby
 ENV PORT 8080
-CMD ["./trade-derby"]
+CMD ["/go/bin/trade-derby"]

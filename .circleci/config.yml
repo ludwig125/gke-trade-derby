@@ -112,46 +112,29 @@ jobs:
             echo -n ${TRADEDERBY_SHEETID} > ./kubernetes/base/tradederby_sheetid.txt
             # base64 -i ignore non-alphabet characters
             echo -n ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -di  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
-          # command: |
-          #   echo -n "usernameTest" > ./kubernetes/base/username.txt
-          #   echo -n "cGFzc3dvcmRfdGVzdAo=" | base64 -d > ./kubernetes/base/password.txt
-          #   echo -n "sheetIDTest" > ./kubernetes/base/tradederby_sheetid.txt
-          #   # base64 -i ignore non-alphabet characters
-          #   echo -n "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgImNsaWVudF9pZCI6ICIxMTM4IiwKfQoK" | base64 -di  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
       - deploy:
           name: Kustomize build and Apply
           command: |
             ./kustomize build ./kubernetes/overlays/dev/ | /usr/local/bin/kubectl apply -f -
             sh kubernetes/overlays/patch.sh "dev-trade-derby"
-      # - run:
-      #     name: Kustomize build and Apply
-      #     command: |
-      #       ./kustomize build ./kubernetes/overlays/dev/ > resource.yaml
-      #       cat resource.yaml
-      # - run:
-      #     name: Kustomize build and Apply2
-      #     command: |            
-      #       /usr/local/bin/kubectl apply -f ./resource.yaml
-
 
 workflows:
   version: 2
   test_and_deploy:
     jobs:
-      - deploy
-      # - setup
-      # - test:
-      #     requires:
-      #       - setup
-      # - Build-Push-Image-Docker:
-      #     requires:
-      #       - test
-      # - deploy:
-      #     requires:
-      #     - Build-Push-Image-Docker
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
+      - setup
+      - test:
+          requires:
+            - setup
+      - Build-Push-Image-Docker:
+          requires:
+            - test
+      - deploy:
+          requires:
+          - Build-Push-Image-Docker
+          filters:
+            branches:
+              only:
+                - master
 
 
