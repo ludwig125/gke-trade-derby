@@ -114,12 +114,15 @@ jobs:
             echo -n "sheetIDTest" > ./kubernetes/base/tradederby_sheetid.txt
             # base64 -i ignore non-alphabet characters
             echo -n "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgImNsaWVudF9pZCI6ICIxMTM4IiwKfQoK" | base64 -di  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
-      - deploy:
+      - run:
           name: Kustomize build and Apply
           command: |
             ./kustomize build ./kubernetes/overlays/dev/ > resource.yaml
             cat resource.yaml
-            /usr/local/bin/kubectl apply -f resource.yaml
+      - run:
+          name: Kustomize build and Apply2
+          command: |            
+            /usr/local/bin/kubectl apply -f ./resource.yaml
             
       # - deploy:
       #     name: Kustomize build and Apply
