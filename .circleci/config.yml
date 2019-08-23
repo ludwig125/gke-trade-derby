@@ -89,6 +89,10 @@ jobs:
       #     container: trade-derby-web
       #     image: gcr.io/${GOOGLE_PROJECT_ID}/trade-derby:latest
       - run:
+          name: Gcloud container clusters get-credentials
+          command: |
+            gcloud container clusters get-credentials trade-derby-small-cluster
+      - run:
           name: Install kustomize
           command: |
             opsys=linux  # or darwin, or windows
@@ -102,30 +106,33 @@ jobs:
             chmod u+x kustomize
       - run:
           name: Create secret
-          # command: |
-          #   echo -n ${TRADEDERBY_USERNAME} > ./kubernetes/base/username.txt
-          #   echo -n ${TRADEDERBY_PASSWORD} | base64 -d > ./kubernetes/base/password.txt
-          #   echo -n ${TRADEDERBY_SHEETID} > ./kubernetes/base/tradederby_sheetid.txt
-          #   # base64 -i ignore non-alphabet characters
-          #   echo -n ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -di  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
           command: |
-            echo -n "usernameTest" > ./kubernetes/base/username.txt
-            echo -n "cGFzc3dvcmRfdGVzdAo=" | base64 -d > ./kubernetes/base/password.txt
-            echo -n "sheetIDTest" > ./kubernetes/base/tradederby_sheetid.txt
+            echo -n ${TRADEDERBY_USERNAME} > ./kubernetes/base/username.txt
+            echo -n ${TRADEDERBY_PASSWORD} | base64 -d > ./kubernetes/base/password.txt
+            echo -n ${TRADEDERBY_SHEETID} > ./kubernetes/base/tradederby_sheetid.txt
             # base64 -i ignore non-alphabet characters
-            echo -n "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgImNsaWVudF9pZCI6ICIxMTM4IiwKfQoK" | base64 -di  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
+            echo -n ${TRADEDERBY_SPREADSHEET_SERVICEACCOUNT} | base64 -di  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
+          # command: |
+          #   echo -n "usernameTest" > ./kubernetes/base/username.txt
+          #   echo -n "cGFzc3dvcmRfdGVzdAo=" | base64 -d > ./kubernetes/base/password.txt
+          #   echo -n "sheetIDTest" > ./kubernetes/base/tradederby_sheetid.txt
+          #   # base64 -i ignore non-alphabet characters
+          #   echo -n "ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCIsCiAgImNsaWVudF9pZCI6ICIxMTM4IiwKfQoK" | base64 -di  > ./kubernetes/base/gke-trade-derby-serviceaccount.json
       - deploy:
           name: Kustomize build and Apply
           command: |
-            ./kustomize build ./kubernetes/overlays/dev/ > resource.yaml
-            cat resource.yaml
-            /usr/local/bin/kubectl apply -f resource.yaml
-            
-      # - deploy:
+            ./kustomize build ./kubernetes/overlays/dev/ | /usr/local/bin/kubectl apply -f -
+            sh kubernetes/overlays/patch.sh "dev-trade-derby"
+      # - run:
       #     name: Kustomize build and Apply
       #     command: |
-      #       ./kustomize build ./kubernetes/overlays/dev/ | /usr/local/bin/kubectl apply -f -
-      #       sh kubernetes/overlays/patch.sh "dev-trade-derby"
+      #       ./kustomize build ./kubernetes/overlays/dev/ > resource.yaml
+      #       cat resource.yaml
+      # - run:
+      #     name: Kustomize build and Apply2
+      #     command: |            
+      #       /usr/local/bin/kubectl apply -f ./resource.yaml
+
 
 workflows:
   version: 2
