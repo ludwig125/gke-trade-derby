@@ -14,6 +14,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /go/bin/trade-derby
 
 FROM alpine:latest
+RUN  apk add --update chromium chromium-chromedriver
 COPY --from=build-step /go/bin/trade-derby ./trade-derby
 ENV PORT 8080
 CMD ["./trade-derby"]
