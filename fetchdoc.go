@@ -61,13 +61,26 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 
 	// IDの要素を取得し、値を設定
 	identity := page.FindByID("login_id")
-	identity.Fill(user)
+	if err := identity.Fill(user); err != nil {
+		return fmt.Errorf("failed to Fill login_id: %v", err)
+	}
 
 	// passwordの要素を取得し、値を設定
 	password := page.FindByName("password")
-	password.Fill(pass)
+	if err := password.Fill(pass); err != nil {
+		return fmt.Errorf("failed to Fill login_id: %v", err)
+	}
 
 	time.Sleep(1 * time.Second)
+
+	// cnt, err := page.All("ログイン").Count()
+	// if err != nil {
+	// 	log.Printf("failed to count ログイン: %v", err)
+	// }
+	// log.Println("count ログイン", cnt)
+	resFindByIDLoginButton := page.FindByID("login_button")
+	log.Printf("resFindByIDLoginButton: %#v", resFindByIDLoginButton)
+
 	if err := page.FindByID("login_button").Submit(); err != nil {
 		return fmt.Errorf("failed to confirm password: %v", err)
 	}
