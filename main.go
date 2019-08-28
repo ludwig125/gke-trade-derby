@@ -80,20 +80,18 @@ func init() {
 		user = mustGetenv("APPUSER")
 		pass = mustGetenv("APPPASS")
 		sheetID = mustGetenv("TRADEDERBY_SHEETID")
-
-		// test用
-		cdir := os.Getenv("CREDENTIALFILE_DIR")
-		if cdir != "" {
-			credentialFileDir = cdir
-		}
-
-		// Sheetをみにいくためのserviceaccountの置き場所
-		// ローカルでもGKEでも同じになるようにvolumeのmountPathなどを調節している
-		credentialFilePath = fileMustExists(credentialFileDir + "/gke-trade-derby-serviceaccount.json")
-
-		log.Println("set env infos")
 	}
 
+	// testまたはdebug用
+	cdir := os.Getenv("CREDENTIALFILE_DIR")
+	if cdir != "" {
+		credentialFileDir = cdir
+	}
+	// Sheetをみにいくためのserviceaccountの置き場所
+	// ローカルでもGKEでも同じになるようにvolumeのmountPathなどを調節している
+	credentialFilePath = fileMustExists(credentialFileDir + "/gke-trade-derby-serviceaccount.json")
+
+	log.Println("set env infos")
 }
 
 func main() {

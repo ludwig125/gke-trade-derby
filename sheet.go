@@ -28,7 +28,7 @@ func getSheetClient() (*sheets.Service, error) {
 func getClientWithJSON() (*http.Client, error) {
 	data, err := ioutil.ReadFile(credentialFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read client secret file: %v", err)
+		return nil, fmt.Errorf("failed to read client secret file. path: '%s', %v", credentialFilePath, err)
 	}
 	conf, err := google.JWTConfigFromJSON(data, "https://www.googleapis.com/auth/spreadsheets")
 	if err != nil {
