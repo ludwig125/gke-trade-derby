@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/sclevine/agouti"
 )
@@ -53,7 +54,7 @@ func fetchStockDocFromWebPage(user string, pass string) (string, error) {
 func login(page *agouti.Page, user string, pass string, loginURL string) error {
 	// ログインページに遷移
 	if err := page.Navigate(loginURL); err != nil {
-		return fmt.Errorf("Failed to navigate: %v", err)
+		return fmt.Errorf("failed to navigate: %v", err)
 	}
 
 	// HTML: view-source:https://www.k-zone.co.jp/td/users/login
@@ -66,9 +67,9 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 	password := page.FindByName("password")
 	password.Fill(pass)
 
-	//time.Sleep(1 * time.Second)
+	time.Sleep(1 * time.Second)
 	if err := page.FindByID("login_button").Submit(); err != nil {
-		return fmt.Errorf("Failed to confirm password: %v", err)
+		return fmt.Errorf("failed to confirm password: %v", err)
 	}
 	return nil
 }
