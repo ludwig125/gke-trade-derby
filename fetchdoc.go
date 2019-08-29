@@ -17,6 +17,8 @@ func fetchStockDocFromWebPage(user string, pass string) (string, error) {
 		agouti.ChromeOptions("args", []string{
 			"--headless", // ブラウザを立ち上げないheadlessモードの指定
 			//"--window-size=1280,800", // ウィンドウサイズの指定
+			"--disable-gpu", // 暫定的に必要なフラグ
+			"--no-sandbox",
 		}),
 		agouti.Debug,
 	)
