@@ -15,12 +15,12 @@ func getSheetClient() (*sheets.Service, error) {
 	// googleAPIへのclientをリクエストから作成
 	client, err := getClientWithJSON()
 	if err != nil {
-		return nil, fmt.Errorf("failed to getClientWithJSON, %v", err)
+		return nil, fmt.Errorf("failed to getClientWithJSON: %v", err)
 	}
 	// spreadsheets clientを取得
 	srv, err := sheets.New(client)
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve Sheets Client %v", err)
+		return nil, fmt.Errorf("failed to retrieve Sheets Client: %v", err)
 	}
 	return srv, nil
 }
@@ -28,7 +28,7 @@ func getSheetClient() (*sheets.Service, error) {
 func getClientWithJSON() (*http.Client, error) {
 	data, err := ioutil.ReadFile(credentialFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read client secret file: %v", err)
+		return nil, fmt.Errorf("failed to read client secret file. path: '%s', %v", credentialFilePath, err)
 	}
 	conf, err := google.JWTConfigFromJSON(data, "https://www.googleapis.com/auth/spreadsheets")
 	if err != nil {
@@ -41,7 +41,7 @@ func clearSheet(srv *sheets.Service, sid string, sname string) error {
 	// clear stockprice rate spreadsheet:
 	resp, err := srv.Spreadsheets.Values.Clear(sid, sname, &sheets.ClearValuesRequest{}).Do()
 	if err != nil {
-		return fmt.Errorf("failed to clear value. %v", err)
+		return fmt.Errorf("failed to clear value: %v", err)
 	}
 	status := resp.ServerResponse.HTTPStatusCode
 	if status != 200 {
