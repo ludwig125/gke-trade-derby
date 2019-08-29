@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/sclevine/agouti"
 )
@@ -53,22 +54,50 @@ func fetchStockDocFromWebPage(user string, pass string) (string, error) {
 func login(page *agouti.Page, user string, pass string, loginURL string) error {
 	// ログインページに遷移
 	if err := page.Navigate(loginURL); err != nil {
-		return fmt.Errorf("Failed to navigate: %v", err)
+		return fmt.Errorf("failed to navigate: %v", err)
 	}
+
+	// if err != nil {
+	// 	return fmt.Errorf("failed to get HTML: %v", err)
+	// }
+	// log.Println("---------------------------------------------------")
+	// log.Println("HTML:", html)
+	// log.Println("---------------------------------------------------")
+
+	// html, err := page.HTML()
+	// if err != nil {
+	// 	return fmt.Errorf("failed to get HTML: %v", err)
+	// }
+	// log.Println("---------------------------------------------------")
+	// log.Println("HTML:", html)
+	// log.Println("---------------------------------------------------")
 
 	// HTML: view-source:https://www.k-zone.co.jp/td/users/login
 
 	// IDの要素を取得し、値を設定
 	identity := page.FindByID("login_id")
-	identity.Fill(user)
+	if err := identity.Fill(user); err != nil {
+		return fmt.Errorf("failed to Fill login_id: %v", err)
+	}
 
 	// passwordの要素を取得し、値を設定
 	password := page.FindByName("password")
-	password.Fill(pass)
+	if err := password.Fill(pass); err != nil {
+		return fmt.Errorf("failed to Fill login_id: %v", err)
+	}
 
-	//time.Sleep(1 * time.Second)
+	time.Sleep(1 * time.Second)
+
+	// cnt, err := page.All("ログイン").Count()
+	// if err != nil {
+	// 	log.Printf("failed to count ログイン: %v", err)
+	// }
+	// log.Println("count ログイン", cnt)
+	resFindByIDLoginButton := page.FindByID("login_button")
+	log.Printf("resFindByIDLoginButton: %#v", resFindByIDLoginButton)
+
 	if err := page.FindByID("login_button").Submit(); err != nil {
-		return fmt.Errorf("Failed to confirm password: %v", err)
+		return fmt.Errorf("failed to confirm password: %v", err)
 	}
 	return nil
 }
