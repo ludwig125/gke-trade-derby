@@ -59,20 +59,13 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 		return fmt.Errorf("failed to navigate: %v", err)
 	}
 
-	// if err != nil {
-	// 	return fmt.Errorf("failed to get HTML: %v", err)
-	// }
-	// log.Println("---------------------------------------------------")
-	// log.Println("HTML:", html)
-	// log.Println("---------------------------------------------------")
-
-	// html, err := page.HTML()
-	// if err != nil {
-	// 	return fmt.Errorf("failed to get HTML: %v", err)
-	// }
-	// log.Println("---------------------------------------------------")
-	// log.Println("HTML:", html)
-	// log.Println("---------------------------------------------------")
+	html, err := page.HTML()
+	if err != nil {
+		return fmt.Errorf("failed to get HTML: %v", err)
+	}
+	log.Println("---------------------------------------------------")
+	log.Println("HTML:", html)
+	log.Println("---------------------------------------------------")
 
 	// HTML: view-source:https://www.k-zone.co.jp/td/users/login
 
