@@ -8,7 +8,9 @@ import (
 	"os"
 	"runtime"
 	"syscall"
+	"time"
 
+	"github.com/sclevine/agouti"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -104,6 +106,10 @@ func main() {
 	server := http.NewServeMux()
 	server.HandleFunc("/", indexHandler)
 	server.HandleFunc("/tradederby", tradeDerby)
+	server.HandleFunc("/tradederby2", tradeDerby2)
+	server.HandleFunc("/tradederby3", tradeDerby3)
+	server.HandleFunc("/tradederby4", tradeDerby4)
+	server.HandleFunc("/tradederby5", tradeDerby5)
 
 	// start the web server on port and accept requests
 	log.Printf("Server listening on port: %s", port)
@@ -161,4 +167,237 @@ func tradeDerby(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("failed to clearAndWriteSheet. %v", err)
 	}
 	log.Println("succeeded to write sheet")
+}
+
+func tradeDerby2(w http.ResponseWriter, r *http.Request) {
+	driver := agouti.ChromeDriver(
+		agouti.ChromeOptions("args", []string{
+			"--headless", // ブラウザを立ち上げないheadlessモードの指定
+			//"--window-size=1280,800", // ウィンドウサイズの指定
+			"--disable-gpu", // 暫定的に必要なフラグ
+			"--no-sandbox",
+		}),
+		agouti.Debug,
+	)
+	if err := driver.Start(); err != nil {
+		log.Printf("Failed to start driver: %v", err)
+	}
+	defer driver.Stop()
+	log.Println("succeeded to start WebDriver")
+
+	// WebDriverの新規セッションを作成
+	page, err := driver.NewPage()
+	if err != nil {
+		log.Printf("Failed to open page: %v", err)
+	}
+	log.Println("succeeded to start new WebDriver session")
+
+	loginURL := "https://www.k-zone.co.jp/td/users/login"
+	if err := page.Navigate(loginURL); err != nil {
+		log.Printf("failed to navigate: %v", err)
+	}
+
+	time.Sleep(1 * time.Second)
+
+	count(page, "tradederby2")
+	log.Println("finished successfully")
+}
+
+func tradeDerby3(w http.ResponseWriter, r *http.Request) {
+	driver := agouti.ChromeDriver(
+		agouti.ChromeOptions("args", []string{
+			"--headless", // ブラウザを立ち上げないheadlessモードの指定
+			//"--window-size=1280,800", // ウィンドウサイズの指定
+			"--disable-gpu", // 暫定的に必要なフラグ
+			"--no-sandbox",
+		}),
+		agouti.Debug,
+	)
+	if err := driver.Start(); err != nil {
+		log.Printf("Failed to start driver: %v", err)
+	}
+	defer driver.Stop()
+	log.Println("succeeded to start WebDriver")
+
+	// WebDriverの新規セッションを作成
+	page, err := driver.NewPage()
+	if err != nil {
+		log.Printf("Failed to open page: %v", err)
+	}
+	log.Println("succeeded to start new WebDriver session")
+
+	loginURL := "https://www.k-zone.co.jp/td/users/login"
+	if err := page.Navigate(loginURL); err != nil {
+		log.Printf("failed to navigate: %v", err)
+	}
+
+	time.Sleep(1 * time.Second)
+
+	count(page, "tradederby3-1")
+
+	// IDの要素を取得し、値を設定
+	identity := page.FindByID("login_id")
+	if err := identity.Fill(user); err != nil {
+		log.Fatalf("failed to Fill login_id: %v", err)
+	}
+	log.Println("succeeded to fill login")
+
+	count(page, "tradederby3-2")
+	log.Println("finished successfully")
+}
+
+func tradeDerby4(w http.ResponseWriter, r *http.Request) {
+	driver := agouti.ChromeDriver(
+		agouti.ChromeOptions("args", []string{
+			"--headless", // ブラウザを立ち上げないheadlessモードの指定
+			//"--window-size=1280,800", // ウィンドウサイズの指定
+			"--disable-gpu", // 暫定的に必要なフラグ
+			"--no-sandbox",
+		}),
+		agouti.Debug,
+	)
+	if err := driver.Start(); err != nil {
+		log.Printf("Failed to start driver: %v", err)
+	}
+	defer driver.Stop()
+	log.Println("succeeded to start WebDriver")
+
+	// WebDriverの新規セッションを作成
+	page, err := driver.NewPage()
+	if err != nil {
+		log.Printf("Failed to open page: %v", err)
+	}
+	log.Println("succeeded to start new WebDriver session")
+
+	loginURL := "https://www.k-zone.co.jp/td/users/login"
+	if err := page.Navigate(loginURL); err != nil {
+		log.Printf("failed to navigate: %v", err)
+	}
+
+	time.Sleep(1 * time.Second)
+
+	count(page, "tradederby4-1")
+
+	// IDの要素を取得し、値を設定
+	identity := page.FindByID("login_id")
+	if err := identity.Fill(user); err != nil {
+		log.Fatalf("failed to Fill login_id: %v", err)
+	}
+	log.Println("succeeded to fill login")
+
+	count(page, "tradederby4-2")
+
+	// passwordの要素を取得し、値を設定
+	password := page.FindByName("password")
+	if err := password.Fill(pass); err != nil {
+		log.Fatalf("failed to Fill login_id: %v", err)
+	}
+	log.Println("succeeded to fill pass")
+
+	count(page, "tradederby4-3")
+
+	// if err := page.FindByID("login_button").Submit(); err != nil {
+	// 	log.Fatalf("failed to confirm password: %v", err)
+	// }
+	//count(page, "tradederby4-4")
+
+	log.Println("finished successfully")
+}
+
+func tradeDerby5(w http.ResponseWriter, r *http.Request) {
+	driver := agouti.ChromeDriver(
+		agouti.ChromeOptions("args", []string{
+			"--headless", // ブラウザを立ち上げないheadlessモードの指定
+			//"--window-size=1280,800", // ウィンドウサイズの指定
+			"--disable-gpu", // 暫定的に必要なフラグ
+			"--no-sandbox",
+		}),
+		agouti.Debug,
+	)
+	if err := driver.Start(); err != nil {
+		log.Printf("Failed to start driver: %v", err)
+	}
+	defer driver.Stop()
+	log.Println("succeeded to start WebDriver")
+
+	// WebDriverの新規セッションを作成
+	page, err := driver.NewPage()
+	if err != nil {
+		log.Printf("Failed to open page: %v", err)
+	}
+	log.Println("succeeded to start new WebDriver session")
+
+	loginURL := "https://www.k-zone.co.jp/td/dashboards/position_hold?lang=ja"
+	if err := page.Navigate(loginURL); err != nil {
+		log.Printf("failed to navigate: %v", err)
+	}
+
+	time.Sleep(1 * time.Second)
+
+	count(page, "tradederby5-1")
+
+	// IDの要素を取得し、値を設定
+	identity := page.FindByID("login_id")
+	if err := identity.Fill(user); err != nil {
+		log.Fatalf("failed to Fill login_id: %v", err)
+	}
+	log.Println("succeeded to fill login")
+
+	count(page, "tradederby5-2")
+
+	// passwordの要素を取得し、値を設定
+	password := page.FindByName("password")
+	if err := password.Fill(pass); err != nil {
+		log.Fatalf("failed to Fill login_id: %v", err)
+	}
+	log.Println("succeeded to fill pass")
+
+	count(page, "tradederby5-3")
+
+	if err := page.FindByID("login_button").Submit(); err != nil {
+		//log.Fatalf("failed to confirm password: %v", err)
+		log.Println("failed to confirm password")
+	}
+	count(page, "tradederby5-4")
+
+	stockInfoURL := "https://www.k-zone.co.jp/td/dashboards/position_hold?lang=ja"
+	if err := page.Navigate(stockInfoURL); err != nil {
+		log.Printf("Failed to navigate bookstore page: %v", err)
+	}
+	count(page, "tradederby5-5")
+
+	log.Println("finished successfully")
+}
+
+func count(page *agouti.Page, str string) {
+	log.Println(str, "find id")
+	file := fmt.Sprintf("/tmp/%s.jpg", str)
+	page.Screenshot(file)
+	makeHTML(page, str)
+
+	s := page.FindByID("login_button")
+	//log.Printf("selection --'%#v'--, --'%v'--\n\n", sele, sele)
+	//log.Printf("%T\n", s)
+	cnt, err := s.Count()
+	if err != nil {
+		log.Printf("failed to select elements from %s: %v", s, err)
+		return
+	}
+	log.Println("len ele", cnt)
+}
+
+func makeHTML(page *agouti.Page, str string) {
+	html, err := page.HTML()
+	if err != nil {
+		log.Printf("failed to get HTML: %v", err)
+	}
+
+	path := fmt.Sprintf("/tmp/%s.html", str)
+	file, err := os.Create(path)
+	if err != nil {
+		log.Printf("failed to open file %s", path)
+	}
+	defer file.Close()
+
+	file.Write(([]byte)(html))
 }
