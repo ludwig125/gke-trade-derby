@@ -37,7 +37,8 @@ func fetchStockDocFromWebPage(user string, pass string) (string, error) {
 	}
 	log.Println("succeeded to start new WebDriver session")
 
-	loginURL := "https://www.k-zone.co.jp/td/users/login"
+	//loginURL := "https://www.k-zone.co.jp/td/users/login"
+	loginURL := "https://www.k-zone.co.jp/td/dashboards/position_hold?lang=ja"
 	if err := login(page, user, pass, loginURL); err != nil {
 		return "", fmt.Errorf("failed to login, %v", err)
 	}
@@ -59,13 +60,13 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 		return fmt.Errorf("failed to navigate: %v", err)
 	}
 
-	html, err := page.HTML()
-	if err != nil {
-		return fmt.Errorf("failed to get HTML: %v", err)
-	}
-	log.Println("---------------------------------------------------")
-	log.Println("HTML:", html)
-	log.Println("---------------------------------------------------")
+	// html, err := page.HTML()
+	// if err != nil {
+	// 	return fmt.Errorf("failed to get HTML: %v", err)
+	// }
+	// log.Println("---------------------------------------------------")
+	// log.Println("HTML:", html)
+	// log.Println("---------------------------------------------------")
 
 	// HTML: view-source:https://www.k-zone.co.jp/td/users/login
 
@@ -83,13 +84,7 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 
 	time.Sleep(1 * time.Second)
 
-	// cnt, err := page.All("ログイン").Count()
-	// if err != nil {
-	// 	log.Printf("failed to count ログイン: %v", err)
-	// }
-	// log.Println("count ログイン", cnt)
-	resFindByIDLoginButton := page.FindByID("login_button")
-	log.Printf("resFindByIDLoginButton: %#v", resFindByIDLoginButton)
+	count(page, "gke_tradederby-1")
 
 	log.Println("find id")
 	sele := page.FindByID("login_button")
@@ -103,7 +98,8 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 	log.Println("len ele", cnt)
 
 	if err := page.FindByID("login_button").Submit(); err != nil {
-		return fmt.Errorf("failed to confirm password: %v", err)
+		//return fmt.Errorf("failed to confirm password: %v", err)
+		log.Println("failed to confirm password")
 	}
 	return nil
 }
@@ -113,7 +109,7 @@ func fetchStockDoc(page *agouti.Page, stockInfoURL string) (string, error) {
 		return "", fmt.Errorf("Failed to navigate bookstore page: %v", err)
 	}
 	//time.Sleep(1 * time.Second)
-
+	count(page, "gke_tradederby-2")
 	html, err := page.HTML()
 	if err != nil {
 		return "", fmt.Errorf("Failed to get html: %v", err)
