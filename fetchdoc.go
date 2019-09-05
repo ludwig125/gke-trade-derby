@@ -86,17 +86,6 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 
 	count(page, "gke_tradederby-1")
 
-	log.Println("find id")
-	sele := page.FindByID("login_button")
-	log.Printf("selection --'%#v'--, --'%v'--\n\n", sele, sele)
-
-	log.Printf("%T\n", sele)
-	cnt, err := sele.Count()
-	if err != nil {
-		log.Fatalf("failed to select elements from %s: '%v'", sele, err)
-	}
-	log.Println("len ele", cnt)
-
 	if err := page.FindByID("login_button").Submit(); err != nil {
 		//return fmt.Errorf("failed to confirm password: %v", err)
 		log.Println("failed to confirm password")
