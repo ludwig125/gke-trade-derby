@@ -84,7 +84,7 @@ func login(page *agouti.Page, user string, pass string, loginURL string) error {
 
 	time.Sleep(1 * time.Second)
 
-	count(page, "gke_tradederby-1")
+	//count(page, "gke_tradederby-1")
 
 	if err := page.FindByID("login_button").Submit(); err != nil {
 		//return fmt.Errorf("failed to confirm password: %v", err)
@@ -98,7 +98,7 @@ func fetchStockDoc(page *agouti.Page, stockInfoURL string) (string, error) {
 		return "", fmt.Errorf("Failed to navigate bookstore page: %v", err)
 	}
 	//time.Sleep(1 * time.Second)
-	count(page, "gke_tradederby-2")
+	//count(page, "gke_tradederby-2")
 	html, err := page.HTML()
 	if err != nil {
 		return "", fmt.Errorf("Failed to get html: %v", err)

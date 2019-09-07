@@ -5,7 +5,9 @@ metadata:
   labels:
     app: trade-derby
 spec:
+  #schedule: "0 0 9,10,11,12,13,14,15,16 * *"
   schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid # 前のCronが動いていたら動作しない
   jobTemplate:
     spec:
       template:
@@ -56,4 +58,5 @@ spec:
               items:
               - key: gke-trade-derby-serviceaccount.json # keyはファイル名がそのまま設定されている
                 path: gke-trade-derby-serviceaccount.json
+          #restartPolicy: Never # Cron失敗時にコンテナを再起動しない
           restartPolicy: OnFailure

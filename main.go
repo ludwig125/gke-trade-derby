@@ -126,12 +126,16 @@ func main() {
 	// func tradeDerby(w http.ResponseWriter, r *http.Request) {
 	html, err := fetchStockDocFromWebPage(user, pass)
 	if err != nil {
-		log.Fatalf("Failed to fetchStockDocFromWebPage, %v", err)
+		//log.Fatalf("Failed to fetchStockDocFromWebPage, %v", err)
+		log.Printf("failed to fetchStockDocFromWebPage: %v", err)
+		return
 	}
 
 	stockInfos, err := fetchStockInfo(html)
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		log.Printf("failed to fetchStockInfo: %v", err)
+		return
 	}
 	fmt.Println(stockInfos)
 
@@ -155,7 +159,8 @@ func main() {
 	// spreadsheetのclientを取得
 	srv, err := getSheetClient()
 	if err != nil {
-		log.Fatalf("failed to get sheet client. err: %v", err)
+		log.Printf("failed to get sheet client. err: %v", err)
+		return
 	}
 	log.Println("succeeded to get sheet client")
 

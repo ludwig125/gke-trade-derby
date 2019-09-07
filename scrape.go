@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -35,6 +36,7 @@ func fetchStockInfo(html string) ([]stockInfo, error) {
 	})
 
 	if stockInfos == nil {
+		log.Printf("--HTML--\n%s\n--------\n", html)
 		return []stockInfo{}, fmt.Errorf("failed to scrape stockInfo")
 	}
 
