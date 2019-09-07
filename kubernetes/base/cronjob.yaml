@@ -1,0 +1,59 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: trade-derby
+  labels:
+    app: trade-derby
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: trade-derby
+        spec:
+          containers:
+          - name: trade-derby-container
+            image: gcr.io/gke-trade-derby/trade-derby:latest
+            imagePullPolicy: Always
+            command: ["/trade-derby",
+                      "--number=$(ENV_NUMBER)"]
+            ports:
+            - containerPort: 8080
+            resources:
+              requests:
+                memory: 512Mi
+            env:
+            - name: ENV_NUMBER
+              valueFrom:
+                configMapKeyRef:
+                  name: the-map
+                  key: env_number
+            - name: APPUSER
+              valueFrom:
+                secretKeyRef:
+                  name: kube-user
+                  key: username
+            - name: APPPASS
+              valueFrom:
+                secretKeyRef:
+                  name: kube-pass
+                  key: password
+            - name: TRADEDERBY_SHEETID
+              valueFrom:
+                secretKeyRef:
+                  name: kube-tradederby-sheetid
+                  key: tradederby_sheetid
+            volumeMounts:
+              - name: serviceaccount-volume
+                mountPath: credential
+                readOnly: true
+          volumes:
+          - name: serviceaccount-volume
+            secret:
+              secretName: kube-trade-derby-serviceaccount
+              items:
+              - key: gke-trade-derby-serviceaccount.json # keyはファイル名がそのまま設定されている
+                path: gke-trade-derby-serviceaccount.json
+          restartPolicy: OnFailure
