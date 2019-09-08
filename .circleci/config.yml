@@ -116,7 +116,7 @@ jobs:
           name: Kustomize build and Apply
           command: |
             ./kustomize build ./kubernetes/overlays/dev/ | /usr/local/bin/kubectl apply -f -
-            sh kubernetes/overlays/patch.sh "dev-trade-derby"
+            #sh kubernetes/overlays/patch.sh "dev-trade-derby"
 
 workflows:
   version: 2
